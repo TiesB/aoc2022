@@ -21,7 +21,7 @@ pub fn main() -> Result<(), Error> {
     let mut groups: Vec<Vec<String>> = Vec::new();
     groups.push(vec![]);
     for line in lines.into_iter() {
-        if (line.len() > 0) {
+        if line.len() > 0 {
             let mut group = groups.pop().unwrap();
             group.push(line.to_string());
             groups.push(group);

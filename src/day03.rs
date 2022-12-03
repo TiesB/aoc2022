@@ -14,11 +14,9 @@ fn char_to_num(c: char) -> u32 {
 }
 
 fn strings_intersection(strings: Vec<String>) -> String {
-    strings
-        .iter()
-        .fold(strings[0].chars().collect(), |acc, cur| {
-            acc.chars().filter(|c| cur.chars().contains(c)).collect()
-        })
+    strings[1..].iter().fold(strings[0].clone(), |acc, cur| {
+        acc.chars().filter(|c| cur.chars().contains(c)).collect()
+    })
 }
 
 fn solve1(rucksacks: Vec<String>) -> u32 {
@@ -30,14 +28,8 @@ fn solve1(rucksacks: Vec<String>) -> u32 {
                 rucksack[rucksack.len() / 2..].to_string(),
             )
         })
-        .map(|rucksack| {
-            rucksack
-                .0
-                .chars()
-                .filter(|c| rucksack.1.contains(*c))
-                .collect::<Vec<char>>()
-        })
-        .map(|v| char_to_num(v[0]))
+        .map(|rucksack| strings_intersection(vec![rucksack.0, rucksack.1]))
+        .map(|v| char_to_num(v.chars().collect::<Vec<char>>()[0]))
         .sum()
 }
 
