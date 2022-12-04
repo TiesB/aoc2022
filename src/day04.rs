@@ -11,6 +11,11 @@ fn parse_elf(elf: &str) -> (u32, u32) {
     )
 }
 
+fn parse_pair(pair: &str) -> ((u32, u32), (u32, u32)) {
+    let split: Vec<&str> = pair.split(',').collect();
+    (parse_elf(split[0]), parse_elf(split[1]))
+}
+
 fn overlaps_entirely(pair: &((u32, u32), (u32, u32))) -> bool {
     (pair.0 .0 <= pair.1 .0 && pair.0 .1 >= pair.1 .1)
         || (pair.1 .0 <= pair.0 .0 && pair.1 .1 >= pair.0 .1)
@@ -25,8 +30,7 @@ fn solve1(pairs: Vec<((u32, u32), (u32, u32))>) -> usize {
     pairs
         .iter()
         .filter(|pair| overlaps_entirely(pair))
-        .map(|pair| pair.to_owned())
-        .collect::<Vec<((u32, u32), (u32, u32))>>()
+        .collect::<Vec<&((u32, u32), (u32, u32))>>()
         .len()
 }
 
@@ -34,8 +38,7 @@ fn solve2(pairs: Vec<((u32, u32), (u32, u32))>) -> usize {
     pairs
         .iter()
         .filter(|pair| overlaps_partly(pair))
-        .map(|pair| pair.to_owned())
-        .collect::<Vec<((u32, u32), (u32, u32))>>()
+        .collect::<Vec<&((u32, u32), (u32, u32))>>()
         .len()
 }
 
@@ -46,10 +49,7 @@ pub fn main() -> Result<(), Error> {
     let pairs: Vec<((u32, u32), (u32, u32))> = input
         .trim()
         .split('\n')
-        .map(|line| {
-            let split: Vec<&str> = line.split(',').collect();
-            (parse_elf(split[0]), parse_elf(split[1]))
-        })
+        .map(|line| parse_pair(line))
         .collect();
 
     println!("Found {} pairs", pairs.len());
