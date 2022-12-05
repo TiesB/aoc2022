@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::Error;
 use std::path::Path;
+use std::time::Instant;
 use std::vec;
 
 use itertools::Itertools;
@@ -58,15 +59,12 @@ fn parse_lines(lines: Vec<&str>) -> (HashMap<usize, Vec<char>>, Vec<(usize, usiz
 fn solve1<'a>(
     (cols, moves): &'a mut (HashMap<usize, Vec<char>>, Vec<(usize, usize, usize)>),
 ) -> String {
-    for mov in moves {
-        let cnt = mov.0;
-        let src = mov.1;
-        let dst = mov.2;
-        let mut collect = vec![];
-        for _ in 0..cnt {
-            collect.push(cols.get_mut(&src).unwrap().pop().unwrap());
-        }
-        cols.get_mut(&dst).unwrap().append(&mut collect);
+    for (cnt, src, dst) in moves {
+        let [src_col, dst_col] = cols.get_many_mut([src, dst]).unwrap();
+        let x = src_col.len() - *cnt;
+        let c = &mut src_col.split_off(x);
+        c.reverse();
+        dst_col.extend_from_slice(c);
     }
     cols.keys()
         .sorted()
@@ -77,16 +75,10 @@ fn solve1<'a>(
 fn solve2<'a>(
     (cols, moves): &'a mut (HashMap<usize, Vec<char>>, Vec<(usize, usize, usize)>),
 ) -> String {
-    for mov in moves {
-        let cnt = mov.0;
-        let src = mov.1;
-        let dst = mov.2;
-        let mut collect = vec![];
-        for _ in 0..cnt {
-            collect.push(cols.get_mut(&src).unwrap().pop().unwrap());
-        }
-        collect.reverse();
-        cols.get_mut(&dst).unwrap().append(&mut collect);
+    for (cnt, src, dst) in moves {
+        let [src_col, dst_col] = cols.get_many_mut([src, dst]).unwrap();
+        let x = src_col.len() - *cnt;
+        dst_col.extend_from_slice(&mut src_col.split_off(x));
     }
     cols.keys()
         .sorted()
@@ -99,9 +91,20 @@ pub fn main() -> Result<(), Error> {
     let mut input = String::new();
     file.read_to_string(&mut input)?;
     let lines = input.split('\n').collect::<Vec<&str>>();
+    println!("Starting parsing");
+    let pstart = Instant::now();
     let data = parse_lines(lines);
+    println!("Parsing took: {:.2?}", pstart.elapsed());
 
-    println!("Part 1: {}", solve1(data.clone().borrow_mut()));
-    println!("Part 2: {}", solve2(data.clone().borrow_mut()));
+    println!("Starting part 1");
+    let s1start = Instant::now();
+    let s1 = solve1(data.clone().borrow_mut());
+    let s1elapsed = s1start.elapsed();
+    println!("Starting part 2");
+    let s2start = Instant::now();
+    let s2 = solve2(data.clone().borrow_mut());
+    let s2elapsed = s2start.elapsed();
+    println!("Part 1: {}. Took: {:.2?}", s1, s1elapsed);
+    println!("Part 2: {}. Took: {:.2?}", s2, s2elapsed);
     Ok(())
 }

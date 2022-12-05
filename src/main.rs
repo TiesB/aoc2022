@@ -1,3 +1,4 @@
+#![feature(map_many_mut)]
 #[macro_use]
 extern crate scan_fmt;
 
