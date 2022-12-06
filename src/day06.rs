@@ -1,16 +1,18 @@
-use std::collections::HashSet;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::Error;
 use std::path::Path;
 use std::time::Instant;
 
+use itertools::Itertools;
+
 fn solve_for_size(line: &Vec<char>, size: usize) -> usize {
-    for i in size..line.len() {
-        let marker: HashSet<&char> = HashSet::from_iter(line[i - size..i].iter());
-        if marker.len() == size {
+    let mut i = 0;
+    for w in line.windows(size) {
+        if w.iter().all_unique() {
             return i;
         }
+        i += 1;
     }
     0
 }
