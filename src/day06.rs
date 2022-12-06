@@ -7,14 +7,11 @@ use std::time::Instant;
 use itertools::Itertools;
 
 fn solve_for_size(line: &Vec<char>, size: usize) -> usize {
-    let mut i = 0;
-    for w in line.windows(size) {
-        if w.iter().all_unique() {
-            return i;
-        }
-        i += 1;
-    }
-    0
+    line.windows(size)
+        .find_position(|w| w.iter().all_unique())
+        .unwrap()
+        .0
+        + size
 }
 
 fn solve1(line: &Vec<char>) -> usize {
