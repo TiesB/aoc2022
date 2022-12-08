@@ -4,6 +4,8 @@ use std::io::Error;
 use std::path::Path;
 use std::time::Instant;
 
+use take_until::TakeUntilExt;
+
 type Row = Vec<u32>;
 type Grid = Vec<Row>;
 type Input = Grid;
@@ -32,42 +34,28 @@ fn is_visible(input: &Input, r: usize, c: usize) -> bool {
 
 fn scenic_score(input: &Input, r: usize, c: usize) -> u64 {
     let size = input[r][c];
-    let l_ = input[r][0..c]
+    let left = input[r][0..c]
         .iter()
         .rev()
-        .take_while(|&&s| s < size)
+        .take_until(|&&s| s >= size)
         .collect::<Vec<&u32>>()
         .len();
-    let left = l_ + if l_ < (0..c).len() { 1 } else { 0 };
-    let r_ = input[r][c + 1..input[r].len()]
+    let right = input[r][c + 1..input[r].len()]
         .iter()
-        .take_while(|&&s| s < size)
+        .take_until(|&&s| s >= size)
         .collect::<Vec<&u32>>()
         .len();
-    let right = r_
-        + if r_ < (c + 1..input[r].len()).len() {
-            1
-        } else {
-            0
-        };
-    let u_ = input[0..r]
+    let up = input[0..r]
         .iter()
         .rev()
-        .take_while(|row| row[c] < size)
+        .take_until(|row| row[c] >= size)
         .collect::<Vec<&Row>>()
         .len();
-    let up = u_ + if u_ < (0..r).len() { 1 } else { 0 };
-    let d_ = input[r + 1..input.len()]
+    let down = input[r + 1..input.len()]
         .iter()
-        .take_while(|row| row[c] < size)
+        .take_until(|row| row[c] >= size)
         .collect::<Vec<&Row>>()
         .len();
-    let down = d_
-        + if d_ < (r + 1..input.len()).len() {
-            1
-        } else {
-            0
-        };
     let score = (left * right * up * down).try_into().unwrap();
     score
 }
