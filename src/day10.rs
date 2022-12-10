@@ -4,53 +4,35 @@ use std::io::Error;
 use std::path::Path;
 use std::time::Instant;
 
-enum Op {
-    Add(i64),
-    Noop,
-}
-
 type Input<'a> = Vec<i64>;
 
 type Output1 = i64;
 type Output2 = ();
 
 fn parse_input(input: &str) -> Input {
-    let ops: Vec<Op> = input
-        .trim()
-        .split('\n')
-        .map(|line| {
-            let parts = line.split(" ").collect::<Vec<&str>>();
-            match parts[0] {
-                "addx" => Op::Add(parts[1].parse::<i64>().unwrap()),
-                "noop" => Op::Noop,
-                _ => panic!(),
-            }
-        })
-        .collect();
     let mut r: Vec<i64> = vec![];
     let mut x: i64 = 1;
-    for op in ops {
-        match op {
-            Op::Add(y) => {
+    input.trim().split('\n').for_each(|line| {
+        let parts = line.split(" ").collect::<Vec<&str>>();
+        match parts[0] {
+            "addx" => {
                 r.push(x);
                 r.push(x);
-                x += y;
+                x += parts[1].parse::<i64>().unwrap();
             }
-            Op::Noop => {
+            "noop" => {
                 r.push(x);
             }
+            _ => panic!(),
         }
-    }
+    });
     r
 }
 
 fn solve1(input: &Input) -> Output1 {
     vec![20, 60, 100, 140, 180, 220]
         .iter()
-        .map(|c| -> i64 {
-            let x = input.get(*c - 1).unwrap() * *c as i64;
-            x
-        })
+        .map(|c| input.get(*c - 1).unwrap() * *c as i64)
         .sum()
 }
 
