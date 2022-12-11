@@ -7,7 +7,7 @@ use std::time::Instant;
 type Input<'a> = Vec<i64>;
 
 type Output1 = i64;
-type Output2 = ();
+type Output2 = String;
 
 fn parse_input(input: &str) -> Input {
     let mut r: Vec<i64> = vec![];
@@ -38,18 +38,20 @@ fn solve1(input: &Input) -> Output1 {
 
 fn solve2(input: &Input) -> Output2 {
     let mut clock = 0;
+    let mut crt = "".to_string();
     for _ in 0..6 {
+        crt += "\n";
         for x in 0..40 {
             let val = input[clock];
             if val - 1 == x || val == x || val + 1 == x {
-                print!("#");
+                crt += "#";
             } else {
-                print!(".");
+                crt += ".";
             }
             clock += 1;
         }
-        println!();
     }
+    crt
 }
 
 pub fn main() -> Result<(), Error> {
@@ -68,9 +70,9 @@ pub fn main() -> Result<(), Error> {
     let s1elapsed = s1start.elapsed();
     println!("Starting part 2");
     let s2start = Instant::now();
-    solve2(&dirs);
+    let s2 = solve2(&dirs);
     let s2elapsed = s2start.elapsed();
     println!("Part 1({:.2?}): {}", s1elapsed, s1);
-    println!("Part 2({:.2?})", s2elapsed);
+    println!("Part 2({:.2?}): {}", s2elapsed, s2);
     Ok(())
 }
