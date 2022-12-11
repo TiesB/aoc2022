@@ -1,4 +1,5 @@
 #![feature(map_many_mut)]
+#![feature(get_many_mut)]
 #[macro_use]
 extern crate scan_fmt;
 
@@ -12,6 +13,8 @@ mod day07;
 mod day08;
 mod day09;
 mod day10;
+mod day11;
+
 fn main() {
     println!("Day 1:");
     day01::main().unwrap();
@@ -33,4 +36,6 @@ fn main() {
     day09::main().unwrap();
     println!("Day 10:");
     day10::main().unwrap();
+    println!("Day 11:");
+    day11::main().unwrap();
 }
