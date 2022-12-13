@@ -17,6 +17,7 @@ mod day09;
 mod day10;
 mod day11;
 mod day12;
+mod day13;
 
 fn main() {
     let s = Instant::now();
@@ -45,6 +46,8 @@ fn main() {
     day11::main().unwrap();
     println!("Day 12:");
     day12::main().unwrap();
+    println!("Day 13:");
+    day13::main().unwrap();
 
     println!("Total runtime: {:.2?}", s.elapsed());
 }
