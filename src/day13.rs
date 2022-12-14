@@ -2,12 +2,10 @@ use std::cmp::Ordering;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::Error;
-use std::ops::Index;
 use std::path::Path;
 use std::time::Instant;
 
 use itertools::Itertools;
-use serde_json::Number;
 use serde_json::Value;
 
 type Pair = (Value, Value);
@@ -37,7 +35,7 @@ enum CompareResult {
     NotDone,
 }
 
-fn check(pair: Pair) -> CompareResult {
+fn compare(pair: Pair) -> CompareResult {
     match &pair.0 {
         Value::Number(l) => match &pair.1 {
             Value::Number(r) => {
@@ -50,11 +48,11 @@ fn check(pair: Pair) -> CompareResult {
                     CompareResult::Done(false)
                 }
             }
-            Value::Array(_) => check((Value::Array(vec![pair.0]), pair.1)),
+            Value::Array(_) => compare((Value::Array(vec![pair.0]), pair.1)),
             _ => panic!(),
         },
         Value::Array(al) => match pair.1 {
-            Value::Number(_) => check((pair.0, Value::Array(vec![pair.1]))),
+            Value::Number(_) => compare((pair.0, Value::Array(vec![pair.1]))),
             Value::Array(ar) => {
                 if al.is_empty() && !ar.is_empty() {
                     return CompareResult::Done(true);
@@ -66,7 +64,7 @@ fn check(pair: Pair) -> CompareResult {
 
                     let il = &al[i];
                     let ir = &ar[i];
-                    let c = check((il.clone(), ir.clone()));
+                    let c = compare((il.clone(), ir.clone()));
                     if c == CompareResult::NotDone {
                         if al.len() - 1 == i && ar.len() - 1 > i {
                             return CompareResult::Done(true);
@@ -87,7 +85,7 @@ fn check(pair: Pair) -> CompareResult {
 fn solve1(input: &Input) -> Output1 {
     let mut sum = 0;
     for i in 0..input.len() {
-        let c = check(input[i].clone());
+        let c = compare(input[i].clone());
         if c == CompareResult::NotDone {
             panic!()
         }
@@ -107,7 +105,7 @@ fn solve2(input: &Input) -> Output2 {
         all.push(pair.1.clone());
     }
     all.sort_by(|a, b| {
-        let c = check((a.clone(), b.clone()));
+        let c = compare((a.clone(), b.clone()));
         match c {
             CompareResult::Done(true) => Ordering::Less,
             CompareResult::Done(false) => Ordering::Greater,
